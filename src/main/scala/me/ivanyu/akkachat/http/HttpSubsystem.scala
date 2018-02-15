@@ -11,11 +11,8 @@ import me.ivanyu.akkachat.sessions.SessionsSubsystem
 /**
   * The HTTP subsystem.
   */
-class HttpSubsystem(
-  config: AppConfig,
-  sessionsSubsystem: SessionsSubsystem)(
-  implicit val actorSys: ActorSystem,
-  implicit val mat: ActorMaterializer) {
+class HttpSubsystem(config: AppConfig, sessionsSubsystem: SessionsSubsystem)(implicit val actorSys: ActorSystem,
+                                                                             implicit val mat: ActorMaterializer) {
 
   val routes: Route = {
     (path("websocket") & get & extractUpgradeToWebSocket) { upgradeToWebSocket =>

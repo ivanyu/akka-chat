@@ -77,7 +77,11 @@ libraryDependencies ++= Seq(
 
   /* Testing */
   "org.scalatest" %% "scalatest" % "3.0.5" % Test,
-  "org.scalamock" %% "scalamock" % "4.0.0" % Test,
+  "org.scalamock" %% "scalamock" % "4.0.0" % Test
 )
 
 (scalastyleConfig in Test) := baseDirectory.value / "scalastyle-test-config.xml"
+
+scalafmtVersion in ThisBuild := "1.4.0"
+scalafmtOnCompile in ThisBuild := true
+scalafmtOnCompile in Sbt := false

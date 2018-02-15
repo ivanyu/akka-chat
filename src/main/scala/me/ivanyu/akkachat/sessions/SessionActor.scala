@@ -11,7 +11,9 @@ import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
 import me.ivanyu.akkachat.sessions.SessionManagerProtocol.SessionStreamComplete
 
 private class SessionActor(config: AppConfig, protected val chatActor: ActorRef)
-  extends Actor with Stash with ActorLogging
+    extends Actor
+    with Stash
+    with ActorLogging
     with SessionInitialization
     with SessionWaitingForAuthentication
     with SessionWaitingForAttaching
@@ -29,10 +31,11 @@ private trait NormalOperation extends SessionBase {
   _: Actor with ActorLogging =>
 
   protected def normalOperation(
-    username: String,
-    streamActor: ActorRef,
-    outActor: ActorRef,
-    userActor: ActorRef): Receive =
+      username: String,
+      streamActor: ActorRef,
+      outActor: ActorRef,
+      userActor: ActorRef
+  ): Receive =
     streamProtocol orElse {
       ////
       // Messages from the client side
@@ -83,9 +86,7 @@ private trait NormalOperation extends SessionBase {
 private trait SessionWaitingForAttaching extends SessionBase {
   _: Actor with Stash with NormalOperation with ActorLogging =>
 
-  protected def waitingForAttaching(
-    username: String, streamActor: ActorRef, outActor: ActorRef): Receive =
-
+  protected def waitingForAttaching(username: String, streamActor: ActorRef, outActor: ActorRef): Receive =
     streamProtocol orElse {
       case ChatActorProtocol.SessionAttached(userActor) =>
         log.debug("Attached to \"{}\"", username)
@@ -105,9 +106,7 @@ private trait SessionWaitingForAuthentication extends SessionBase {
   _: Actor with SessionWaitingForAttaching with ActorLogging =>
   protected val chatActor: ActorRef
 
-  protected def waitingForAuthentication(
-    streamActor: ActorRef, outActor: ActorRef): Receive =
-
+  protected def waitingForAuthentication(streamActor: ActorRef, outActor: ActorRef): Receive =
     streamProtocol orElse {
       case ToSessionStreamElement.Authenticated(username) =>
         chatActor ! ChatActorProtocol.AttachSession(username, self)
@@ -116,8 +115,7 @@ private trait SessionWaitingForAuthentication extends SessionBase {
 
       case other: Any =>
         log.warning("Received {} from client, Authentication request expected. Stopping", other)
-        sendErrorToClient(
-          outActor, "Protocol violation: Authentication request is expected", close = true)
+        sendErrorToClient(outActor, "Protocol violation: Authentication request is expected", close = true)
     }
 }
 
@@ -135,38 +133,37 @@ private trait SessionInitialization extends SessionBase {
     * Wait for both [[RegisterOutActor]] and [[SessionStreamInit]].
     * Proceed when both have arrived exactly once.
     */
-  protected def initialization(
-    outActorOpt: Option[ActorRef],
-    streamActorOpt: Option[ActorRef]): Receive = streamProtocol orElse {
+  protected def initialization(outActorOpt: Option[ActorRef], streamActorOpt: Option[ActorRef]): Receive =
+    streamProtocol orElse {
 
-    case RegisterOutActor(outActor) =>
-      assert(outActorOpt.isEmpty)
+      case RegisterOutActor(outActor) =>
+        assert(outActorOpt.isEmpty)
 
-      // if SessionStreamInit has been received already
-      streamActorOpt match {
-        case Some(initSender) =>
-          finishInitialization(initSender, outActor)
+        // if SessionStreamInit has been received already
+        streamActorOpt match {
+          case Some(initSender) =>
+            finishInitialization(initSender, outActor)
 
-        case None =>
-          context.become(
-            initialization(Some(outActor), streamActorOpt)
-          )
-      }
+          case None =>
+            context.become(
+              initialization(Some(outActor), streamActorOpt)
+            )
+        }
 
-    case SessionStreamInit =>
-      assert(streamActorOpt.isEmpty)
+      case SessionStreamInit =>
+        assert(streamActorOpt.isEmpty)
 
-      // if RegisterOutActor has been received already
-      outActorOpt match {
-        case Some(outActor) =>
-          finishInitialization(sender(), outActor)
+        // if RegisterOutActor has been received already
+        outActorOpt match {
+          case Some(outActor) =>
+            finishInitialization(sender(), outActor)
 
-        case None =>
-          context.become(
-            initialization(outActorOpt, streamActorOpt = Some(sender()))
-          )
-      }
-  }
+          case None =>
+            context.become(
+              initialization(outActorOpt, streamActorOpt = Some(sender()))
+            )
+        }
+    }
 
   private def finishInitialization(streamActor: ActorRef, outActor: ActorRef): Unit = {
     acknowledgeStreamMessage(streamActor) // stream: acknowledge initialization
@@ -194,14 +191,12 @@ private trait SessionBase {
       context.stop(self)
   }
 
-  protected def sendNormalMessageToClient(
-    outActor: ActorRef, message: FromServer): Unit = {
+  protected def sendNormalMessageToClient(outActor: ActorRef, message: FromServer): Unit = {
 
     outActor ! message
   }
 
-  protected def sendErrorToClient(
-    outActor: ActorRef, error: String, close: Boolean): Unit = {
+  protected def sendErrorToClient(outActor: ActorRef, error: String, close: Boolean): Unit = {
 
     outActor ! Error(error)
     if (close) {

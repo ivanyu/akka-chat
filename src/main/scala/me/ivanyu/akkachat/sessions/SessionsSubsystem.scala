@@ -20,13 +20,12 @@ import me.ivanyu.akkachat.sessions.SessionManagerProtocol._
   *
   * Owns all sessions.
   */
-class SessionsSubsystem(config: AppConfig, chatSubsystem: ChatSubsystem)
-  (implicit val actorSys: ActorSystem, val mat: Materializer) {
+class SessionsSubsystem(config: AppConfig, chatSubsystem: ChatSubsystem)(implicit val actorSys: ActorSystem,
+                                                                         val mat: Materializer) {
 
   private implicit val ec: ExecutionContext = actorSys.dispatcher
 
-  private val sessionManager = actorSys.actorOf(
-    SessionManager.props(config, chatSubsystem.chatActor), "sessions")
+  private val sessionManager = actorSys.actorOf(SessionManager.props(config, chatSubsystem.chatActor), "sessions")
 
   private val bufferSize = config.Session.StreamBufferSize
 
@@ -45,26 +44,26 @@ class SessionsSubsystem(config: AppConfig, chatSubsystem: ChatSubsystem)
   // Discard binary messages,
   // linearise chunked text messages.
   private val inWSMessageToString: Flow[Message, String, NotUsed] =
-  Flow[Message].flatMapConcat {
-    case tm: TextMessage =>
-      tm.textStream
-    case bm: BinaryMessage =>
-      bm.dataStream.runWith(Sink.ignore)
-      throw new Exception("Binary messages not supported")
-  }
+    Flow[Message].flatMapConcat {
+      case tm: TextMessage =>
+        tm.textStream
+      case bm: BinaryMessage =>
+        bm.dataStream.runWith(Sink.ignore)
+        throw new Exception("Binary messages not supported")
+    }
 
   private val outStringToWSMessage: Flow[String, Message, NotUsed] =
     Flow[String].map(s => TextMessage(s))
 
   private def inSink(session: ActorRef): Sink[ToSessionStreamElement, NotUsed] = {
-    Sink.actorRefWithAck[ToSessionStreamElement](
-      session, SessionStreamInit, SessionStreamAck, SessionStreamComplete)
+    Sink.actorRefWithAck[ToSessionStreamElement](session, SessionStreamInit, SessionStreamAck, SessionStreamComplete)
   }
 
   // Fail the outgoing stream if there's too much backpressure.
   // This is needed to avoid the connection hanging if the server is too slow.
   private def outSource(session: ActorRef): Source[FromServer, Any] =
-    Source.actorRef[FromServer](bufferSize, OverflowStrategy.fail)
+    Source
+      .actorRef[FromServer](bufferSize, OverflowStrategy.fail)
       .mapMaterializedValue { sourceActor =>
         session ! RegisterOutActor(sourceActor)
       }

@@ -7,6 +7,7 @@ import me.ivanyu.akkachat.AppConfig
 import me.ivanyu.akkachat.util.SequentialCounter
 
 private class UserActorHolder(config: AppConfig) {
+
   /** The map between usernames and users sessions. */
   private var users: Map[String, ActorRef] = Map.empty
 

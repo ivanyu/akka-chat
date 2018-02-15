@@ -2,7 +2,6 @@ package me.ivanyu.akkachat.chat
 
 import java.time.ZonedDateTime
 
-
 private class ChatLog(maxChatLogElements: Int) {
   import me.ivanyu.akkachat.chat.ChatLog._
 
@@ -40,12 +39,14 @@ private object ChatLog {
   sealed trait LogEntry
 
   final case class UserJoinedOrLeftLog(
-    username: String,
-    joined: Boolean,
-    timestamp: ZonedDateTime) extends LogEntry
+      username: String,
+      joined: Boolean,
+      timestamp: ZonedDateTime
+  ) extends LogEntry
 
   final case class UserMessageLog(
-    username: String,
-    timestamp: ZonedDateTime,
-    text: String) extends LogEntry
+      username: String,
+      timestamp: ZonedDateTime,
+      text: String
+  ) extends LogEntry
 }

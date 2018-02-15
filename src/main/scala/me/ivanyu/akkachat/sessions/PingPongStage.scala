@@ -18,7 +18,7 @@ import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
   * the connection is closed.
   */
 private class PingPongStage(config: AppConfig)
-  extends GraphStage[BidiShape[ToSessionStreamElement, ToSessionStreamElement, FromServer, FromServer]] {
+    extends GraphStage[BidiShape[ToSessionStreamElement, ToSessionStreamElement, FromServer, FromServer]] {
 
   val inFromClient: Inlet[ToSessionStreamElement] = Inlet("InFromClient")
   val outToServer: Outlet[ToSessionStreamElement] = Outlet("OutToServer")
@@ -49,22 +49,25 @@ private class PingPongStage(config: AppConfig)
       }
     })
 
-    setHandler(outToClient, new OutHandler {
-      override def onPull(): Unit = {
-        if (needToSendPing) {
-          log.debug("Sending PING")
-          push(outToClient, Ping)
-          if (!hasBeenPulled(inFromClient)) {
-            pull(inFromClient)
-          }
-          scheduleSendPing()
-        } else {
-          if (!hasBeenPulled(inFromServer)) {
-            pull(inFromServer)
+    setHandler(
+      outToClient,
+      new OutHandler {
+        override def onPull(): Unit = {
+          if (needToSendPing) {
+            log.debug("Sending PING")
+            push(outToClient, Ping)
+            if (!hasBeenPulled(inFromClient)) {
+              pull(inFromClient)
+            }
+            scheduleSendPing()
+          } else {
+            if (!hasBeenPulled(inFromServer)) {
+              pull(inFromServer)
+            }
           }
         }
       }
-    })
+    )
 
     setHandler(inFromServer, new InHandler {
       override def onPush(): Unit = {
@@ -72,26 +75,29 @@ private class PingPongStage(config: AppConfig)
       }
     })
 
-    setHandler(inFromClient, new InHandler {
-      override def onPush(): Unit = {
+    setHandler(
+      inFromClient,
+      new InHandler {
+        override def onPush(): Unit = {
           grab(inFromClient) match {
-          case auth @ ToSessionStreamElement.Authenticated(_) =>
-            scheduleSendPing()
-            scheduleClientTimeout()
-            push(outToServer, auth)
+            case auth @ ToSessionStreamElement.Authenticated(_) =>
+              scheduleSendPing()
+              scheduleClientTimeout()
+              push(outToServer, auth)
 
-          case ToSessionStreamElement.FromClientWrapper(Pong) =>
-            log.debug("Got PONG")
-            if (!hasBeenPulled(inFromClient)) {
-              pull(inFromClient)
-            }
-            scheduleClientTimeout()
+            case ToSessionStreamElement.FromClientWrapper(Pong) =>
+              log.debug("Got PONG")
+              if (!hasBeenPulled(inFromClient)) {
+                pull(inFromClient)
+              }
+              scheduleClientTimeout()
 
-          case fromClient =>
-            push(outToServer, fromClient)
+            case fromClient =>
+              push(outToServer, fromClient)
+          }
         }
       }
-    })
+    )
 
     private def scheduleSendPing(): Unit = {
       needToSendPing = false

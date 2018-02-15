@@ -6,8 +6,11 @@ import org.scalatest.{FlatSpecLike, Matchers}
 
 import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
 
-class ChatTestSingleUserMultiSessionDispatchMessages extends FlatSpecLike
-  with Matchers with ScalatestRouteTest with ChatTest {
+class ChatTestSingleUserMultiSessionDispatchMessages
+    extends FlatSpecLike
+    with Matchers
+    with ScalatestRouteTest
+    with ChatTest {
 
   "Chat" should "dispatch message to same user sessions" in {
     val id1 = "1"

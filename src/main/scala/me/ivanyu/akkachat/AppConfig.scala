@@ -6,10 +6,10 @@ import com.typesafe.config.{Config, ConfigFactory}
 import AppConfig._
 
 final case class AppConfig(
-  AskTimeout: FiniteDuration,
-  Http: HttpConfig,
-  Session: SessionConfig,
-  Chat: ChatConfig
+    AskTimeout: FiniteDuration,
+    Http: HttpConfig,
+    Session: SessionConfig,
+    Chat: ChatConfig
 )
 
 object AppConfig {
@@ -28,9 +28,10 @@ object AppConfig {
     *                                (not responding with pong) that the server tolerates.
     */
   final case class SessionConfig(
-    StreamBufferSize: Int,
-    PingPeriod: FiniteDuration,
-    ClientInactivityTimeout: FiniteDuration)
+      StreamBufferSize: Int,
+      PingPeriod: FiniteDuration,
+      ClientInactivityTimeout: FiniteDuration
+  )
 
   /**
     * The chat configuration.
@@ -47,44 +48,34 @@ object AppConfig {
     *                         after which a snapshot must be taken.
     */
   final case class ChatConfig(
-    RequestLogElementCount: Int,
-    UserActorIdleTimeout: FiniteDuration,
-    MaxChatLogLengthInMemory: Int,
-    MaxDurationOfRecentlyAcceptedMessages: FiniteDuration,
-    SnapshotInterval: Int)
-
+      RequestLogElementCount: Int,
+      UserActorIdleTimeout: FiniteDuration,
+      MaxChatLogLengthInMemory: Int,
+      MaxDurationOfRecentlyAcceptedMessages: FiniteDuration,
+      SnapshotInterval: Int
+  )
 
   def apply(): AppConfig = {
     val config: Config = ConfigFactory.load()
 
     AppConfig(
       AskTimeout = config.getDuration("application.ask-timeout").asScalaFinite,
-
       Http = HttpConfig(
         Host = config.getString("application.http.host"),
         Port = config.getInt("application.http.port")
       ),
-
       Session = SessionConfig(
-        StreamBufferSize =
-          config.getInt("application.session.stream-buffer-size"),
-        PingPeriod =
-          config.getDuration("application.session.ping-period").asScalaFinite,
-        ClientInactivityTimeout =
-          config.getDuration("application.session.client-inactivity-timeout").asScalaFinite
+        StreamBufferSize = config.getInt("application.session.stream-buffer-size"),
+        PingPeriod = config.getDuration("application.session.ping-period").asScalaFinite,
+        ClientInactivityTimeout = config.getDuration("application.session.client-inactivity-timeout").asScalaFinite
       ),
-
       Chat = ChatConfig(
-        RequestLogElementCount =
-          config.getInt("application.chat.request-log-element-count"),
-        UserActorIdleTimeout =
-          config.getDuration("application.chat.user-actor-idle-timeout").asScalaFinite,
-        MaxChatLogLengthInMemory =
-          config.getInt("application.chat.max-chat-log-length-in-memory"),
-        MaxDurationOfRecentlyAcceptedMessages = config.getDuration(
-          "application.chat.max-duration-of-recently-accepted-messages").asScalaFinite,
-        SnapshotInterval =
-          config.getInt("application.chat.snapshot-interval")
+        RequestLogElementCount = config.getInt("application.chat.request-log-element-count"),
+        UserActorIdleTimeout = config.getDuration("application.chat.user-actor-idle-timeout").asScalaFinite,
+        MaxChatLogLengthInMemory = config.getInt("application.chat.max-chat-log-length-in-memory"),
+        MaxDurationOfRecentlyAcceptedMessages =
+          config.getDuration("application.chat.max-duration-of-recently-accepted-messages").asScalaFinite,
+        SnapshotInterval = config.getInt("application.chat.snapshot-interval")
       )
     )
   }

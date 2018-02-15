@@ -19,7 +19,6 @@ object ClientServerProtocol {
   /** A message that come from the server. */
   sealed trait FromServer extends ClientServerProtocol
 
-
   ////
   // From a client to the server.
   ////
@@ -52,8 +51,9 @@ object ClientServerProtocol {
     * @param text the text of the message.
     */
   final case class ClientToServerMessage(
-    clientSideId: MessageId,
-    text: String) extends FromClient {
+      clientSideId: MessageId,
+      text: String
+  ) extends FromClient {
 
     override def msgType: String = ClientToServerMessage.msgType
   }
@@ -74,7 +74,6 @@ object ClientServerProtocol {
   object GetChatLogElements {
     val msgType = "getChatLogElements"
   }
-
 
   ////
   // From the server to a client.
@@ -128,10 +127,7 @@ object ClientServerProtocol {
     * @param seqN the sequence number in the chat log.
     * @param timestamp the timestamp in the chat log.
     */
-  final case class MessageAck(
-    clientSideId: MessageId,
-    seqN: Long,
-    timestamp: ZonedDateTime) extends FromServer {
+  final case class MessageAck(clientSideId: MessageId, seqN: Long, timestamp: ZonedDateTime) extends FromServer {
 
     override def msgType: String = MessageAck.msgType
   }
@@ -149,10 +145,11 @@ object ClientServerProtocol {
     * @param timestamp the timestamp in the chat log.
     */
   final case class UserJoinedOrLeft(
-    seqN: Long,
-    username: String,
-    joined: Boolean,
-    timestamp: ZonedDateTime) extends FromServer {
+      seqN: Long,
+      username: String,
+      joined: Boolean,
+      timestamp: ZonedDateTime
+  ) extends FromServer {
 
     override def msgType: String = UserJoinedOrLeft.msgType
   }
@@ -172,10 +169,11 @@ object ClientServerProtocol {
     * @param text the text of the message.
     */
   final case class ServerToClientMessage(
-    seqN: Long,
-    username: String,
-    timestamp: ZonedDateTime,
-    text: String) extends FromServer {
+      seqN: Long,
+      username: String,
+      timestamp: ZonedDateTime,
+      text: String
+  ) extends FromServer {
 
     override def msgType: String = ServerToClientMessage.msgType
   }
@@ -184,9 +182,9 @@ object ClientServerProtocol {
     val msgType = "serverToClientMessage"
   }
 
-
   /** An element of the chat log. */
   sealed trait ChatLogElement {
+
     /** The sequence number with which this element was accepted to the log. */
     val seqN: Long
 
@@ -195,24 +193,26 @@ object ClientServerProtocol {
   }
 
   object ChatLogElement {
-    final case class Message(seqN: Long,
-      username: String,
-      timestamp: ZonedDateTime,
-      text: String) extends ChatLogElement
+    final case class Message(
+        seqN: Long,
+        username: String,
+        timestamp: ZonedDateTime,
+        text: String
+    ) extends ChatLogElement
 
     final case class UserJoinedOrLeft(
-      seqN: Long,
-      username: String,
-      joined: Boolean,
-      timestamp: ZonedDateTime) extends ChatLogElement
+        seqN: Long,
+        username: String,
+        joined: Boolean,
+        timestamp: ZonedDateTime
+    ) extends ChatLogElement
   }
 
   /**
     * A response for a user's request of latest chat log elements,
     * [[GetChatLogElements]].
     */
-  final case class ChatLogElements(
-    elements: Seq[ChatLogElement]) extends FromServer {
+  final case class ChatLogElements(elements: Seq[ChatLogElement]) extends FromServer {
 
     override def msgType: String = ChatLogElements.msgType
   }

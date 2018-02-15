@@ -6,8 +6,7 @@ import org.scalatest.{FlatSpecLike, Matchers}
 
 import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
 
-class ChatTestSingleUserRejoin extends FlatSpecLike
-  with Matchers with ScalatestRouteTest with ChatTest {
+class ChatTestSingleUserRejoin extends FlatSpecLike with Matchers with ScalatestRouteTest with ChatTest {
 
   "Chat" should "correctly process user rejoining" in {
     val id1 = "1"

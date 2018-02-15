@@ -7,7 +7,12 @@ import org.scalatest.{FlatSpecLike, Matchers}
 
 import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
 
-class ChatTestGetChatLogElements extends FlatSpecLike with Matchers with ScalatestRouteTest with ChatTest with MockFactory {
+class ChatTestGetChatLogElements
+    extends FlatSpecLike
+    with Matchers
+    with ScalatestRouteTest
+    with ChatTest
+    with MockFactory {
 
   override protected def config: AppConfig = super.config.copy(
     Chat = super.config.Chat.copy(

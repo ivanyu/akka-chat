@@ -32,7 +32,7 @@ trait ChatTest extends ScalatestRouteTest with Matchers {
       ()
     }
 
-    def expectServerMessage[A <: FromServer : ClassTag](): A = {
+    def expectServerMessage[A <: FromServer: ClassTag](): A = {
       val text = wsProbe.expectMessage().asInstanceOf[TextMessage.Strict].text
       val decoded = decodeFromServer(text)
       decoded shouldBe a[Right[_, _]]

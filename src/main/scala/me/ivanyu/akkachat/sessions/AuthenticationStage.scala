@@ -30,7 +30,7 @@ import me.ivanyu.akkachat.chat.ChatActorProtocol._
   * during the authentication phase.
   */
 private class AuthenticationStage(config: AppConfig, chatActor: ActorRef)
-  extends GraphStage[BidiShape[ToSessionStreamElement, ToSessionStreamElement, FromServer, FromServer]] {
+    extends GraphStage[BidiShape[ToSessionStreamElement, ToSessionStreamElement, FromServer, FromServer]] {
 
   import AuthenticationStage._
 
@@ -109,97 +109,116 @@ private class AuthenticationStage(config: AppConfig, chatActor: ActorRef)
     // Server provides
     setHandler(inFromServer, neverCalledInHandler)
     // Client provides
-    setHandler(inFromClient, new InHandler {
-      override def onPush(): Unit = {
-        grab(inFromClient) match {
-          case ToSessionStreamElement.FromClientWrapper(AuthRequest(username, password)) =>
-            implicit val timeout: Timeout = config.AskTimeout
-            implicit val ec: ExecutionContext = graphStage.materializer.executionContext
-            (chatActor ? Authenticate(username, password))
-              .mapTo[AuthenticateResult].map(ar => (ar.success, username))
-              .onComplete(authCallback.invoke)
-            goToAuthenticationInProgressState()
+    setHandler(
+      inFromClient,
+      new InHandler {
+        override def onPush(): Unit = {
+          grab(inFromClient) match {
+            case ToSessionStreamElement.FromClientWrapper(AuthRequest(username, password)) =>
+              implicit val timeout: Timeout = config.AskTimeout
+              implicit val ec: ExecutionContext = graphStage.materializer.executionContext
+              (chatActor ? Authenticate(username, password))
+                .mapTo[AuthenticateResult]
+                .map(ar => (ar.success, username))
+                .onComplete(authCallback.invoke)
+              goToAuthenticationInProgressState()
 
-          case other =>
-            log.warning("Received {} from client, Authentication request expected. Stopping", other)
-            emit(outToClient, Error("Protocol violation: Authentication request is expected"))
-            close()
+            case other =>
+              log.warning("Received {} from client, Authentication request expected. Stopping", other)
+              emit(outToClient, Error("Protocol violation: Authentication request is expected"))
+              close()
+          }
         }
       }
-    })
+    )
 
     private def goToAuthenticationInProgressState(): Unit = {
       // Client provides
-      setHandler(inFromClient, new InHandler {
-        override def onPush(): Unit = {
-          val fromClient = grab(inFromClient)
-          log.warning("Received {} from client, nothing is expected now. Stopping", fromClient)
-          emit(outToClient, Error("Protocol violation: Nothing is expected"))
-          close()
+      setHandler(
+        inFromClient,
+        new InHandler {
+          override def onPush(): Unit = {
+            val fromClient = grab(inFromClient)
+            log.warning("Received {} from client, nothing is expected now. Stopping", fromClient)
+            emit(outToClient, Error("Protocol violation: Nothing is expected"))
+            close()
+          }
         }
-      })
+      )
     }
 
     // scalastyle:off method.length
     private def goToAuthenticatedState(): Unit = {
       // Server demands
-      setHandler(outToServer, new OutHandler {
-        override def onPull(): Unit = {
-          log.debug(s"Server demands, queue ${toServerQueue.toList}")
-          if (toServerQueue.nonEmpty) {
-            push(outToServer, toServerQueue.dequeue())
-          } else {
-            if (!hasBeenPulled(inFromClient)) {
-              pull(inFromClient)
+      setHandler(
+        outToServer,
+        new OutHandler {
+          override def onPull(): Unit = {
+            log.debug(s"Server demands, queue ${toServerQueue.toList}")
+            if (toServerQueue.nonEmpty) {
+              push(outToServer, toServerQueue.dequeue())
+            } else {
+              if (!hasBeenPulled(inFromClient)) {
+                pull(inFromClient)
+              }
             }
           }
         }
-      })
+      )
 
       // Client demands
-      setHandler(outToClient, new OutHandler {
-        override def onPull(): Unit = {
-          log.debug(s"Client demands, queue ${toClientQueue.toList}")
-          if (toClientQueue.nonEmpty) {
-            push(outToClient, toClientQueue.dequeue())
-          } else {
-            if (!hasBeenPulled(inFromServer)) {
-              pull(inFromServer)
+      setHandler(
+        outToClient,
+        new OutHandler {
+          override def onPull(): Unit = {
+            log.debug(s"Client demands, queue ${toClientQueue.toList}")
+            if (toClientQueue.nonEmpty) {
+              push(outToClient, toClientQueue.dequeue())
+            } else {
+              if (!hasBeenPulled(inFromServer)) {
+                pull(inFromServer)
+              }
             }
           }
         }
-      })
+      )
 
       // Server provides
-      setHandler(inFromServer, new InHandler {
-        override def onPush(): Unit = {
-          val fromServer = grab(inFromServer)
-          if (isAvailable(outToClient)) {
-            push(outToClient, fromServer)
-          } else {
-            toClientQueue.enqueue(fromServer)
+      setHandler(
+        inFromServer,
+        new InHandler {
+          override def onPush(): Unit = {
+            val fromServer = grab(inFromServer)
+            if (isAvailable(outToClient)) {
+              push(outToClient, fromServer)
+            } else {
+              toClientQueue.enqueue(fromServer)
+            }
+          }
+
+          override def onUpstreamFinish(): Unit = {
+            emitMultiple(outToClient, toClientQueue.toIterator)
           }
         }
+      )
 
-        override def onUpstreamFinish(): Unit = {
-          emitMultiple(outToClient, toClientQueue.toIterator)
-        }
-      })
+      setHandler(
+        inFromClient,
+        new InHandler {
+          override def onPush(): Unit = {
+            val fromClient = grab(inFromClient)
+            if (isAvailable(outToServer)) {
+              push(outToServer, fromClient)
+            } else {
+              toServerQueue.enqueue(fromClient)
+            }
+          }
 
-      setHandler(inFromClient, new InHandler {
-        override def onPush(): Unit = {
-          val fromClient = grab(inFromClient)
-          if (isAvailable(outToServer)) {
-            push(outToServer, fromClient)
-          } else {
-            toServerQueue.enqueue(fromClient)
+          override def onUpstreamFinish(): Unit = {
+            emitMultiple(outToServer, toServerQueue.toIterator)
           }
         }
-
-        override def onUpstreamFinish(): Unit = {
-          emitMultiple(outToServer, toServerQueue.toIterator)
-        }
-      })
+      )
     }
     // scalastyle:on method.length
 

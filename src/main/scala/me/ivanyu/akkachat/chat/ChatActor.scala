@@ -183,6 +183,7 @@ class ChatActor(config: AppConfig) extends Actor with PersistentActor with Actor
   }
 
   private class UserActorHolder {
+
     /** The map between usernames and users sessions. */
     private var users: Map[String, ActorRef] = Map.empty
 
@@ -267,9 +268,9 @@ object ChatActorProtocol {
     * @param text the text of the message.
     */
   private[chat] final case class MessageFromUser(
-    username: String,
-    id: String,
-    text: String
+      username: String,
+      id: String,
+      text: String
   )
 
   /**
@@ -282,11 +283,11 @@ object ChatActorProtocol {
     * @param timestamp the timestamp in the chat log.
     */
   private[chat] final case class MessageFromUserAccepted(
-    username: String,
-    id: String,
-    text: String,
-    seqN: Long,
-    timestamp: ZonedDateTime
+      username: String,
+      id: String,
+      text: String,
+      seqN: Long,
+      timestamp: ZonedDateTime
   )
 
 }

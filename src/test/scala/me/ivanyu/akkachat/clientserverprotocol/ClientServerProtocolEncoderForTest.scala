@@ -21,11 +21,16 @@ object ClientServerProtocolEncoderForTest {
 
   def encodeTopLevel(fromClient: FromClient): String = {
     val result = fromClient match {
-      case Pong => Pong.asJson
-      case x: AuthRequest => x.asJson
-      case GetUsersInChat => GetUsersInChat.asJson
-      case x: ClientToServerMessage => x.asJson
-      case x: GetChatLogElements => x.asJson
+      case Pong =>
+        Pong.asJson
+      case x: AuthRequest =>
+        x.asJson
+      case GetUsersInChat =>
+        GetUsersInChat.asJson
+      case x: ClientToServerMessage =>
+        x.asJson
+      case x: GetChatLogElements =>
+        x.asJson
     }
 
     result.mapObject { json: JsonObject =>

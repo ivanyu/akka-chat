@@ -16,7 +16,7 @@ import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocolEncoder.encod
   * in case of deserialization problem.
   */
 private class SerializationStage(config: AppConfig)
-  extends GraphStage[BidiShape[String, ToSessionStreamElement, FromServer, String]] {
+    extends GraphStage[BidiShape[String, ToSessionStreamElement, FromServer, String]] {
 
   val inFromClient: Inlet[String] = Inlet("InFromClient")
   val outToServer: Outlet[ToSessionStreamElement] = Outlet("OutToServer")
@@ -43,33 +43,39 @@ private class SerializationStage(config: AppConfig)
       }
     })
 
-    setHandler(inFromClient, new InHandler {
-      override def onPush(): Unit = {
-        val messageStr = grab(inFromClient)
+    setHandler(
+      inFromClient,
+      new InHandler {
+        override def onPush(): Unit = {
+          val messageStr = grab(inFromClient)
 
-        decodeFromClient(messageStr) match {
-          case Right(m) =>
-            push(outToServer, ToSessionStreamElement.FromClientWrapper(m))
+          decodeFromClient(messageStr) match {
+            case Right(m) =>
+              push(outToServer, ToSessionStreamElement.FromClientWrapper(m))
 
-          case Left(decodeError) =>
-            log.warning("Received bad JSON from client: {}. Stopping", decodeError.getMessage)
-            val errorMessage = encodeTopLevel(Error("Bad JSON"))
-            emit(outToClient, errorMessage)
+            case Left(decodeError) =>
+              log.warning("Received bad JSON from client: {}. Stopping", decodeError.getMessage)
+              val errorMessage = encodeTopLevel(Error("Bad JSON"))
+              emit(outToClient, errorMessage)
 
-            // safe to call immediately after emit
-            complete(outToClient)
+              // safe to call immediately after emit
+              complete(outToClient)
+          }
         }
       }
-    })
+    )
 
-    setHandler(inFromServer, new InHandler {
-      override def onPush(): Unit = {
-        grab(inFromServer) match {
-          case fromServer: FromServer =>
-            val fromServerMessage = encodeTopLevel(fromServer)
-            push(outToClient, fromServerMessage)
+    setHandler(
+      inFromServer,
+      new InHandler {
+        override def onPush(): Unit = {
+          grab(inFromServer) match {
+            case fromServer: FromServer =>
+              val fromServerMessage = encodeTopLevel(fromServer)
+              push(outToClient, fromServerMessage)
+          }
         }
       }
-    })
+    )
   }
 }

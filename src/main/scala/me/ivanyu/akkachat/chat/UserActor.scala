@@ -117,8 +117,12 @@ private class UserActor(config: AppConfig, username: String) extends Actor with 
   }
 
   private def handleMessageFromUserAccepted(
-    author: String, id: String,
-    text: String, seqN: Long, timestamp: ZonedDateTime): Unit = {
+      author: String,
+      id: String,
+      text: String,
+      seqN: Long,
+      timestamp: ZonedDateTime
+  ): Unit = {
 
     // Don't send ServerToClientMessage to the sessions from which this message came.
     var messageOriginSessions: Set[ActorRef] = Set.empty
@@ -131,7 +135,8 @@ private class UserActor(config: AppConfig, username: String) extends Actor with 
 
         case None =>
           log.warning("Received MessageFromUserAccepted for id = {}, " +
-            "but message not registered in waiting for acceptation", id)
+                        "but message not registered in waiting for acceptation",
+                      id)
       }
     }
 

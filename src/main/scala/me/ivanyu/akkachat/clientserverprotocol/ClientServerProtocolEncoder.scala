@@ -35,9 +35,8 @@ object ClientServerProtocolEncoder {
     new Encoder[ChatLogElement] {
       private val ELEMENT_TYPE_FIELD = "elementType"
 
-      private implicit val userJoinedOrLeftElementEncoder:
-        Encoder[ChatLogElement.UserJoinedOrLeft] =
-          deriveEncoder[ChatLogElement.UserJoinedOrLeft]
+      private implicit val userJoinedOrLeftElementEncoder: Encoder[ChatLogElement.UserJoinedOrLeft] =
+        deriveEncoder[ChatLogElement.UserJoinedOrLeft]
       private implicit val messageElementEncoder: Encoder[ChatLogElement.Message] =
         deriveEncoder[ChatLogElement.Message]
 
@@ -59,14 +58,22 @@ object ClientServerProtocolEncoder {
 
   private def encodeTopLevelJson(fromServer: FromServer): Json = {
     val result = fromServer match {
-      case Ping => Ping.asJson
-      case x: Error => x.asJson
-      case x: AuthResponse => x.asJson
-      case x: UsersInChat => x.asJson
-      case x: UserJoinedOrLeft => x.asJson
-      case x: MessageAck => x.asJson
-      case x: ServerToClientMessage => x.asJson
-      case x: ChatLogElements => x.asJson
+      case Ping =>
+        Ping.asJson
+      case x: Error =>
+        x.asJson
+      case x: AuthResponse =>
+        x.asJson
+      case x: UsersInChat =>
+        x.asJson
+      case x: UserJoinedOrLeft =>
+        x.asJson
+      case x: MessageAck =>
+        x.asJson
+      case x: ServerToClientMessage =>
+        x.asJson
+      case x: ChatLogElements =>
+        x.asJson
     }
 
     result.mapObject { json: JsonObject =>
