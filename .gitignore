@@ -1,2 +1,5 @@
-*.class
-*.log
+target/
+
+# Intellij IDEA
+.idea/
+*.iml
