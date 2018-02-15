@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Akka Chat</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+  <link href="css/open-iconic-bootstrap.min.css" rel="stylesheet">
+
+  <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.min.js" integrity="sha384-3ziFidFTgxJXHMDttyPJKDuTlmxJlwbSkojudK/CkRqKDOmeSbN6KLrGdrBQnT2n" crossorigin="anonymous"></script>
+
+  <style>
+    html {
+      height: 100%;
+    }
+
+    body {
+      padding-top: 15px;
+      min-height: 100%;
+      height: 100%;
+    }
+
+    .chat-users {
+      padding-left: 5px;
+    }
+
+    .user-dot-online {
+      color: #2b8e12;
+      vertical-align: -12%;
+    }
+
+    .user-dot-offline {
+      color: #827472;
+      vertical-align: -12%;
+    }
+
+    .user-typing-label {
+      font-size: 0.7rem;
+      color: #6d706b;
+      font-style: italic;
+    }
+
+    .chat-log-and-input {
+      border: 1px solid #dfdfdf;
+      border-radius: .25rem;
+      overflow: hidden;
+      max-height: 100%;
+    }
+    
+    .chat-log {
+      padding-top: 1rem;
+      padding-right: 0.5rem;
+      margin-bottom: 0.5rem;
+      overflow-y: scroll;
+      max-height: 100%;
+    }
+
+    .chat-input {
+      margin-bottom: 0.5rem;
+    }
+    
+    .chat-element {
+      background-color: #eaf9ea;
+      padding: .75rem 1.25rem;
+      margin-bottom: 1rem;
+      border: 1px solid #8bbc67;
+      border-radius: .25rem;
+    }
+
+    .chat-element-me {
+      background-color: #ddecff;
+      border: 1px solid #7b8fce;
+    }
+
+    .chat-element-user {
+      font-weight: bold;
+    }
+
+    .chat-element-date {
+      font-size: 0.8rem;
+      color: #6d706b;
+    }
+
+    .chat-element-mark {
+      font-size: 0.6rem;
+      color: #6d706b;
+    }
+    
+    main {
+      padding-top: 20px;
+      padding-bottom: 20px;
+      max-width: 1280px;
+    }
+  </style>
+<body class="py-1">
+
+<main id="root" role="main" class="container-fluid h-100"></main>
+
+<script src="config.js"></script>
+<script type="text/babel" src="chat.jsx"></script>
+
+</body>
+
+<script type="text/javascript" id="useragent-switcher">navigator.__defineGetter__("userAgent", function() {return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36 Edge/15.15063"})</script>
+</html>

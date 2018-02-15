@@ -252,6 +252,14 @@ but with `"joined": false`.
 }
 ```
 
+## UI
+
+The UI is an extremely simple React application. To run it:
+- set the connection string in [ui/config.js](ui/config.js) (the default is for `localhost`);
+- open [ui/chat.html](ui/chat.html) in the browser.
+
+![UI example](ui.png "UI example")
+
 ## License
 
 Copyright 2018 Ivan Yurchenko
