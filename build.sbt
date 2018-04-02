@@ -3,7 +3,7 @@ organization := "me.ivanyu"
 
 version := "0.1"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.5"
 
 scalacOptions ++= Seq(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
@@ -49,7 +49,7 @@ scalacOptions ++= Seq(
 val versions = new {
   val akka = "2.5.11"
   val akkaHttp = "10.1.1"
-  val circe = "0.9.1"
+  val circe = "0.9.3"
 }
 
 libraryDependencies ++= Seq(
@@ -77,7 +77,7 @@ libraryDependencies ++= Seq(
 
   /* Testing */
   "org.scalatest" %% "scalatest" % "3.0.5" % Test,
-  "org.scalamock" %% "scalamock" % "4.0.0" % Test
+  "org.scalamock" %% "scalamock" % "4.1.0" % Test
 )
 
 (scalastyleConfig in Test) := baseDirectory.value / "scalastyle-test-config.xml"
