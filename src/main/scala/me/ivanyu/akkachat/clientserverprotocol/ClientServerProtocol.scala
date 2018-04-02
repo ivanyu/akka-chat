@@ -23,11 +23,6 @@ object ClientServerProtocol {
   // From a client to the server.
   ////
 
-  /** A pong reply from a client to the server's [[Ping]]. */
-  case object Pong extends FromClient {
-    override def msgType: String = "pong"
-  }
-
   /**
     * An authentication request from a client to the server.
     */
@@ -78,11 +73,6 @@ object ClientServerProtocol {
   ////
   // From the server to a client.
   ////
-
-  /** A ping from the server to a client. */
-  case object Ping extends FromServer {
-    override def msgType: String = "ping"
-  }
 
   /**
     * An error sent from the server to a client.

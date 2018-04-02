@@ -47,8 +47,8 @@ scalacOptions ++= Seq(
 )
 
 val versions = new {
-  val akka = "2.5.9"
-  val akkaHttp = "10.0.11"
+  val akka = "2.5.11"
+  val akkaHttp = "10.1.1"
   val circe = "0.9.1"
 }
 

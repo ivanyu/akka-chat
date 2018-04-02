@@ -61,11 +61,6 @@ class ClientServerProtocolEncoderTest extends FlatSpec with Matchers {
     encodeTopLevel(d) shouldBe expected
   }
 
-  it should "encode Ping" in {
-    val expected = s"""{"msgType":"ping"}"""
-    encodeTopLevel(Ping) shouldBe expected
-  }
-
   it should "encode UsersInChat" in {
     val usersInChat = UsersInChat(
       List(

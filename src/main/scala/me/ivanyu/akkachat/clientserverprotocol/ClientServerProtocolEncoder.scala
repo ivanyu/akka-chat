@@ -4,7 +4,6 @@ import io.circe.syntax._
 import io.circe.java8.time._
 import io.circe.{Encoder, Json, JsonObject}
 import io.circe.generic.semiauto.deriveEncoder
-import io.circe.Json.JString
 
 import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
 
@@ -12,8 +11,6 @@ import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
   * Encoder for server-to-client messages.
   */
 object ClientServerProtocolEncoder {
-  private implicit val pingEncoder: Encoder[Ping.type] =
-    deriveEncoder[Ping.type]
   private implicit val errorEncoder: Encoder[Error] =
     deriveEncoder[Error]
   private implicit val authResponseEncoder: Encoder[AuthResponse] =
@@ -58,8 +55,6 @@ object ClientServerProtocolEncoder {
 
   private def encodeTopLevelJson(fromServer: FromServer): Json = {
     val result = fromServer match {
-      case Ping =>
-        Ping.asJson
       case x: Error =>
         x.asJson
       case x: AuthResponse =>

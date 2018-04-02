@@ -459,12 +459,6 @@ class App extends React.Component {
 
             case this.fsmStateAuthenticated: {
                 switch (msg["msgType"]) {
-                    case "ping": {
-                        console.log("Sending pong");
-                        this.wsChat.send(JSON.stringify({"msgType":"pong"}));
-                        return;
-                    }
-
                     case "usersInChat": {
                         this.setState({usersInChat: msg['users']});
                         return;

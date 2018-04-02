@@ -1,15 +1,12 @@
 package me.ivanyu.akkachat.clientserverprotocol
 
 import io.circe.syntax._
-import io.circe.java8.time._
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.{Encoder, Json, JsonObject}
 import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
 
 object ClientServerProtocolEncoderForTest {
 
-  private implicit val pongEncoder: Encoder[Pong.type] =
-    deriveEncoder[Pong.type]
   private implicit val authRequestEncoder: Encoder[AuthRequest] =
     deriveEncoder[AuthRequest]
   private implicit val getUsersEncoder: Encoder[GetUsersInChat.type] =
@@ -21,8 +18,6 @@ object ClientServerProtocolEncoderForTest {
 
   def encodeTopLevel(fromClient: FromClient): String = {
     val result = fromClient match {
-      case Pong =>
-        Pong.asJson
       case x: AuthRequest =>
         x.asJson
       case GetUsersInChat =>

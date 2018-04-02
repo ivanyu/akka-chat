@@ -10,8 +10,6 @@ import me.ivanyu.akkachat.clientserverprotocol.ClientServerProtocol._
   */
 object ClientServerProtocolDecoder {
   private val fromClientDecoder: Decoder[FromClient] = new Decoder[FromClient] {
-    val pongDecoder: Decoder[Pong.type] =
-      deriveDecoder[Pong.type]
     val authRequestDecoder: Decoder[AuthRequest] =
       deriveDecoder[AuthRequest]
     val getUsersDecoder: Decoder[GetUsersInChat.type] =
@@ -23,9 +21,6 @@ object ClientServerProtocolDecoder {
 
     override def apply(c: HCursor): Decoder.Result[FromClient] = {
       c.downField(MSG_TYPE_FIELD).as[String].flatMap {
-        case msgType if msgType == Pong.msgType =>
-          pongDecoder.tryDecode(c)
-
         case AuthRequest.`msgType` =>
           authRequestDecoder.tryDecode(c)
 

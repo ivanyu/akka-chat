@@ -69,8 +69,8 @@ class SessionsSubsystem(config: AppConfig, chatSubsystem: ChatSubsystem)(implici
       }
 
   /**
-    * Incoming: WS -> inBuffer -> inWSMessageToString -> serialization -> auth -> ping -> inSink -> sessionActor
-    * Outgoing: sessionActor -> outSource -> ping -> auth -> serialization -> outStringToWSMessage -> WS
+    * Incoming: WS -> inBuffer -> inWSMessageToString -> serialization -> auth -> inSink -> sessionActor
+    * Outgoing: sessionActor -> outSource -> auth -> serialization -> outStringToWSMessage -> WS
     */
   private def createWSFlow(session: ActorRef): Flow[Message, Message, Any] = {
     Flow.fromGraph(GraphDSL.create() { implicit b =>
@@ -86,19 +86,14 @@ class SessionsSubsystem(config: AppConfig, chatSubsystem: ChatSubsystem)(implici
       val authentication: BidiShape[ToSessionStreamElement, ToSessionStreamElement, FromServer, FromServer] =
         b.add(new AuthenticationStage(config, chatSubsystem.chatActor))
 
-      val pingPong: BidiShape[ToSessionStreamElement, ToSessionStreamElement, FromServer, FromServer] =
-        b.add(new PingPongStage(config))
-
       val outSourceShape: SourceShape[FromServer] = b.add(outSource(session))
       val outStringToWSMessageShape: FlowShape[String, Message] = b.add(outStringToWSMessage)
 
       inBufferShape.out ~> inWSMessageToStringShape ~> serialization.in1
       serialization.out1 ~> authentication.in1
-      authentication.out1 ~> pingPong.in1
-      pingPong.out1 ~> inSinkShape.in
+      authentication.out1 ~> inSinkShape.in
 
-      outSourceShape.out ~> pingPong.in2
-      pingPong.out2 ~> authentication.in2
+      outSourceShape.out ~> authentication.in2
       authentication.out2 ~> serialization.in2
       serialization.out2 ~> outStringToWSMessageShape.in
 

@@ -86,16 +86,6 @@ class ClientServerProtocolDecoderTest extends FlatSpec with Matchers {
     decodeFromClient(jsonStr).right.get shouldBe GetChatLogElements(None)
   }
 
-  it should "decode correct Pong" in {
-    val jsonStr =
-      s"""
-         |{
-         |  "msgType": "pong"
-         |}""".stripMargin
-
-    decodeFromClient(jsonStr).right.get shouldBe Pong
-  }
-
   it should "decode correct GetUsersInChat" in {
     val jsonStr =
       s"""

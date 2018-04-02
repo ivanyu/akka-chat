@@ -23,15 +23,8 @@ object AppConfig {
     * The session configuration.
     *
     * @param StreamBufferSize The size of a session stream incoming and outgoing buffer.
-    * @param PingPeriod The period of sending pings to a client.
-    * @param ClientInactivityTimeout The period of client inactivity
-    *                                (not responding with pong) that the server tolerates.
     */
-  final case class SessionConfig(
-      StreamBufferSize: Int,
-      PingPeriod: FiniteDuration,
-      ClientInactivityTimeout: FiniteDuration
-  )
+  final case class SessionConfig(StreamBufferSize: Int)
 
   /**
     * The chat configuration.
@@ -65,9 +58,7 @@ object AppConfig {
         Port = config.getInt("application.http.port")
       ),
       Session = SessionConfig(
-        StreamBufferSize = config.getInt("application.session.stream-buffer-size"),
-        PingPeriod = config.getDuration("application.session.ping-period").asScalaFinite,
-        ClientInactivityTimeout = config.getDuration("application.session.client-inactivity-timeout").asScalaFinite
+        StreamBufferSize = config.getInt("application.session.stream-buffer-size")
       ),
       Chat = ChatConfig(
         RequestLogElementCount = config.getInt("application.chat.request-log-element-count"),

@@ -76,30 +76,6 @@ __authResponse__
 
 _Implementation note:_ see `AuthenticationStage`.
 
-### Ping-pong
-
-When the client is authenticated, the server starts periodically send `ping` requests to it.
-The client must respond with `pong` during the configurable period of time (1 minute by default),
-otherwise, the connection will be closed by the server.
-
-__ping__
-
-```json
-{
-  "msgType": "ping"
-}
-```
-
-__pong__
-
-```json
-{
-  "msgType": "pong"
-}
-```
-
-_Implementation note:_ see `PingPongStage`.
-
 ### The user joins the chat
 
 When the client is authenticated, the chat actor is notified about it.
